@@ -1,16 +1,17 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
+using System;
+using System.Threading.Tasks;
+using Topshelf;
 
 namespace AbpTopShelf
 {
     public class Program
     {
-        public static async Task<int> Main(string[] args)
+        public static int Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
 #if DEBUG
@@ -27,7 +28,30 @@ namespace AbpTopShelf
             try
             {
                 Log.Information("Starting console host.");
-                await CreateHostBuilder(args).RunConsoleAsync();
+
+                HostFactory.Run(x =>
+                {
+                    var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true).Build();
+                    var name = configuration["ServiceName"];
+                    x.SetServiceName(name);
+                    x.SetDisplayName(name);
+                    x.SetDescription(name);
+                    x.Service<IHost>(s =>
+                    {
+                        s.ConstructUsing(() =>
+                            CreateHostBuilder(args).Build()
+                        );
+
+                        s.WhenStarted(service =>
+                        {
+                            Task.Run(() => service.StartAsync());
+                        });
+                        s.WhenStopped(service =>
+                        {
+                            Task.Run(() => service.StopAsync());
+                        });
+                    });
+                });
                 return 0;
             }
             catch (Exception ex)
@@ -39,11 +63,10 @@ namespace AbpTopShelf
             {
                 Log.CloseAndFlush();
             }
-
         }
 
         internal static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
+            Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args)
                 .UseAutofac()
                 .UseSerilog()
                 .ConfigureAppConfiguration((context, config) =>
