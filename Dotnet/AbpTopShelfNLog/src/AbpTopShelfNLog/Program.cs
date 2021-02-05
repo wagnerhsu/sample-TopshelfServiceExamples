@@ -54,6 +54,8 @@ namespace AbpTopShelfNLog
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddApplication<AbpTopShelfNLogModule>();
-                });
+                })
+                .UseWindowsService()
+                .UseConsoleLifetime();
     }
 }
