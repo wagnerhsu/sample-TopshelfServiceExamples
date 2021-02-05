@@ -4,7 +4,6 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 using System;
-using System.Threading.Tasks;
 using Topshelf;
 
 namespace AbpTopShelf
@@ -39,17 +38,11 @@ namespace AbpTopShelf
                     x.Service<IHost>(s =>
                     {
                         s.ConstructUsing(() =>
-                            CreateHostBuilder(args).Build()
+                            CreateHostBuilder(args).UseConsoleLifetime().Build()
                         );
 
-                        s.WhenStarted(service =>
-                        {
-                            Task.Run(() => service.StartAsync());
-                        });
-                        s.WhenStopped(service =>
-                        {
-                            Task.Run(() => service.StopAsync());
-                        });
+                        s.WhenStarted(service => service.StartAsync(default));
+                        s.WhenStopped(service => service.StopAsync(default));
                     });
                 });
                 return 0;
@@ -76,6 +69,7 @@ namespace AbpTopShelf
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddApplication<AbpTopShelfModule>();
-                });
+                })
+                .UseWindowsService();
     }
 }
