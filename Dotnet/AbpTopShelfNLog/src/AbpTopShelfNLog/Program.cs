@@ -40,8 +40,9 @@ namespace AbpTopShelfNLog
                 .UseAutofac()
                 .ConfigureLogging(logBuilder =>
                 {
-                   NLogWrapper.NLogService.ConfigureLogging(logBuilder);
-                   NLogWrapper.NLogService.BuildLogingConfiguration();
+                    logBuilder.ClearProviders();
+                    logBuilder.SetMinimumLevel(LogLevel.Trace);
+                    logBuilder.AddNLog();
                 })
                 .ConfigureAppConfiguration((context, config) =>
                 {
