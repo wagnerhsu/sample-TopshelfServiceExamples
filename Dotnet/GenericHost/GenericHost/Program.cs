@@ -25,8 +25,8 @@ namespace GenericHost
                 x.Service<IHost>(s =>
                 {
                     s.ConstructUsing(() => CreateHostBuilder(args).Build());
-                    s.WhenStarted(service => service.StartAsync(default));
-                    s.WhenStopped(service => service.StopAsync(default));
+                    s.WhenStarted(async service =>await service.StartAsync(default));
+                    s.WhenStopped(async service =>await service.StopAsync(default));
                 });
             });
         }
