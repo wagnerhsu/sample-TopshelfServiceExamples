@@ -2,16 +2,18 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NLog;
 using NLog.Extensions.Logging;
 using Topshelf;
 using Host = Microsoft.Extensions.Hosting.Host;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace GenericHost
 {
     public class Program
     {
         public static IConfiguration Configuration =>
-            new ConfigurationBuilder().AddJsonFile("appsettings.json",false,true).Build();
+            new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true).Build();
         public static void Main(string[] args)
         {
             HostFactory.Run(x =>
@@ -25,8 +27,8 @@ namespace GenericHost
                 x.Service<IHost>(s =>
                 {
                     s.ConstructUsing(() => CreateHostBuilder(args).Build());
-                    s.WhenStarted(async service =>await service.StartAsync(default));
-                    s.WhenStopped(async service =>await service.StopAsync(default));
+                    s.WhenStarted(async service => await service.StartAsync(default));
+                    s.WhenStopped(async service => await service.StopAsync(default));
                 });
             });
         }
@@ -38,8 +40,8 @@ namespace GenericHost
                     builder.ClearProviders();
                     builder.SetMinimumLevel(LogLevel.Trace);
                     builder.AddNLog(new NLogProviderOptions
-                        { CaptureMessageTemplates = true, CaptureMessageProperties = true });
-                    NLog.LogManager.LoadConfiguration("nlog.config");
+                    { CaptureMessageTemplates = true, CaptureMessageProperties = true });
+                    NLog.LogManager.Setup().LoadConfigurationFromFile("nlog.config");
                 })
                 .UseConsoleLifetime()
                 .UseWindowsService()
