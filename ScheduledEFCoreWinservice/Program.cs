@@ -5,42 +5,34 @@ using System;
 using Topshelf;
 using Topshelf.Autofac;
 
-namespace ScheduledEFCoreWinservice
+namespace ScheduledEFCoreWinservice;
+
+class Program
 {
-    class Program
+    static void Main(string[] args)
     {
-        static void Main(string[] args)
+        LogProvider.SetCurrentLogProvider(new QuartzConsoleLogProvider());
+
+        IContainer container = Bootstrap.BuildContainer();
+        Settings settings = container.Resolve<Settings>();
+
+        HostFactory.Run(x =>
         {
-            LogProvider.SetCurrentLogProvider(new QuartzConsoleLogProvider());
-
-            IContainer container = Bootstrap.BuildContainer();
-            Settings settings = container.Resolve<Settings>();
-
-            HostFactory.Run(x =>
+            x.SetServiceName("ScheduledEFCoreService");
+            x.SetDisplayName("ScheduledEFCoreService");
+            x.SetDescription("");
+            x.UseAutofacContainer(container);
+            if (!string.IsNullOrWhiteSpace(settings.GetAppSetting("RunAsUser")))
             {
-                x.SetServiceName("ScheduledEFCoreService");
-                x.SetDisplayName("ScheduledEFCoreService");
-                x.SetDescription("");
-                x.UseAutofacContainer(container);
-                if (!string.IsNullOrWhiteSpace(settings.GetAppSetting("RunAsUser")))
-                {
-                    x.RunAs(settings.GetAppSetting("RunAsUser"), settings.GetAppSetting("RunAsPassword"));
-                }
+                x.RunAs(settings.GetAppSetting("RunAsUser"), settings.GetAppSetting("RunAsPassword"));
+            }
 
-                x.Service<ScheduledService>(y =>
-                {
-                    y.ConstructUsingAutofacContainer();
-                    y.WhenStarted((service, control) =>
-                    {
-
-                        return service.Start().ConfigureAwait(false).GetAwaiter().GetResult();
-                    });
-                    y.WhenStopped((service, control) =>
-                    {
-                        return service.Start().ConfigureAwait(false).GetAwaiter().GetResult();
-                    });
-                });
+            x.Service<ScheduledService>(y =>
+            {
+                y.ConstructUsingAutofacContainer();
+                y.WhenStarted((service, control) => service.Start().ConfigureAwait(false).GetAwaiter().GetResult());
+                y.WhenStopped((service, control) => service.Start().ConfigureAwait(false).GetAwaiter().GetResult());
             });
-        }
+        });
     }
 }

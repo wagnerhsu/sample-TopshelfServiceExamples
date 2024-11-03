@@ -3,30 +3,34 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ScheduledEFCoreWinservice
+namespace ScheduledEFCoreWinservice;
+
+public class QuartzConsoleLogProvider : ILogProvider
 {
-    public class QuartzConsoleLogProvider : ILogProvider
+    public Logger GetLogger(string name)
     {
-        public Logger GetLogger(string name)
+        return (level, func, exception, parameters) =>
         {
-            return (level, func, exception, parameters) =>
+            if (/*level >= LogLevel.Info && */func != null)
             {
-                if (/*level >= LogLevel.Info && */func != null)
-                {
-                    Console.WriteLine("[" + DateTime.Now.ToLongTimeString() + "] [" + level + "] " + func(), parameters);
-                }
-                return true;
-            };
-        }
+                Console.WriteLine("[" + DateTime.Now.ToLongTimeString() + "] [" + level + "] " + func(), parameters);
+            }
+            return true;
+        };
+    }
 
-        public IDisposable OpenNestedContext(string message)
-        {
-            throw new NotImplementedException();
-        }
+    public IDisposable OpenNestedContext(string message)
+    {
+        throw new NotImplementedException();
+    }
 
-        public IDisposable OpenMappedContext(string key, string value)
-        {
-            throw new NotImplementedException();
-        }
+    public IDisposable OpenMappedContext(string key, string value)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IDisposable OpenMappedContext(string key, object value, bool destructure = false)
+    {
+        throw new NotImplementedException();
     }
 }

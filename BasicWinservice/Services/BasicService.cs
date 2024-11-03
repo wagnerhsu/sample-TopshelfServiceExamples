@@ -3,33 +3,32 @@ using System.Collections.Generic;
 using System.Text;
 using System.Timers;
 
-namespace BasicWinservice.Services
+namespace BasicWinservice.Services;
+
+public class BasicService
 {
-    public class BasicService
+    private readonly Timer _timer;
+
+    public BasicService()
     {
-        private readonly Timer _timer;
+        _timer = new Timer(1000);
+        _timer.Elapsed += _timer_Elapsed;
+    }
 
-        public BasicService()
-        {
-            _timer = new Timer(1000);
-            _timer.Elapsed += _timer_Elapsed;
-        }
+    private void _timer_Elapsed(object sender, ElapsedEventArgs e)
+    {
+        Console.WriteLine("Timer elapsed");
+    }
 
-        private void _timer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            Console.WriteLine("Timer elapsed");
-        }
+    public bool Start()
+    {
+        _timer.Start();
+        return true;
+    }
 
-        public bool Start()
-        {
-            _timer.Start();
-            return true;
-        }
-
-        public bool Stop()
-        {
-            _timer.Stop();
-            return true;
-        }
+    public bool Stop()
+    {
+        _timer.Stop();
+        return true;
     }
 }

@@ -1,13 +1,19 @@
-## Create Windows Service for .NET 5.0
+## Create Windows Service for .NET 6.0
+
 - New a project
+
 ```c#
 dotnet new worker
 ```
+
 - Add TopShelf package
+
 ```c#
 dotnet add package TopShelf
 ```
+
 - Modify Program.cs to enable TopShelf support
+
 ```cs
 public class Worker : BackgroundService
 {
@@ -20,7 +26,9 @@ public class Worker : BackgroundService
     }
 }
 ```
+
 ## Create Windows Service for Abp console template
+
 - Create Abp console application
 - Add package `Microsoft.Extensions.Hosting.WindowsServices`
 - Add `UseWindowsService` and `UseConsoleLifetime` for `IHostBuilder`

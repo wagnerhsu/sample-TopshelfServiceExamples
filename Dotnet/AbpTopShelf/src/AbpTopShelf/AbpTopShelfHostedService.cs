@@ -4,38 +4,37 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Volo.Abp;
 
-namespace AbpTopShelf
+namespace AbpTopShelf;
+
+public class AbpTopShelfHostedService : IHostedService
 {
-    public class AbpTopShelfHostedService : IHostedService
+    private readonly IAbpApplicationWithExternalServiceProvider _application;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly HelloWorldService _helloWorldService;
+
+    public AbpTopShelfHostedService(
+        IAbpApplicationWithExternalServiceProvider application,
+        IServiceProvider serviceProvider,
+        HelloWorldService helloWorldService)
     {
-        private readonly IAbpApplicationWithExternalServiceProvider _application;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly HelloWorldService _helloWorldService;
+        _application = application;
+        _serviceProvider = serviceProvider;
+        _helloWorldService = helloWorldService;
+    }
 
-        public AbpTopShelfHostedService(
-            IAbpApplicationWithExternalServiceProvider application,
-            IServiceProvider serviceProvider,
-            HelloWorldService helloWorldService)
-        {
-            _application = application;
-            _serviceProvider = serviceProvider;
-            _helloWorldService = helloWorldService;
-        }
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        _application.Initialize(_serviceProvider);
 
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            _application.Initialize(_serviceProvider);
+        _helloWorldService.SayHello();
 
-            _helloWorldService.SayHello();
+        return Task.CompletedTask;
+    }
 
-            return Task.CompletedTask;
-        }
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        _application.Shutdown();
 
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            _application.Shutdown();
-
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

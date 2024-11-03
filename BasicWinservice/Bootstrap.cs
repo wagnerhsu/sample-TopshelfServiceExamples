@@ -4,15 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace BasicWinservice
+namespace BasicWinservice;
+
+public class Bootstrap
 {
-    public class Bootstrap
+    public static IContainer BuildContainer()
     {
-        public static IContainer BuildContainer()
-        {
-            ContainerBuilder cb = new ContainerBuilder();
-            cb.RegisterType<BasicService>();
-            return cb.Build();
-        }
+        ContainerBuilder cb = new ContainerBuilder();
+        cb.RegisterType<BasicService>();
+        return cb.Build();
     }
 }

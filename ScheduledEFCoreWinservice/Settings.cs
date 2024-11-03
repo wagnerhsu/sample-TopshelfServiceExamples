@@ -3,20 +3,19 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ScheduledEFCoreWinservice
+namespace ScheduledEFCoreWinservice;
+
+public class Settings
 {
-    public class Settings
+    IConfiguration _configuration;
+
+    public Settings(IConfiguration configuration)
     {
-        IConfiguration _configuration;
+        _configuration = configuration;
+    }
 
-        public Settings(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
-        public string GetAppSetting(string key)
-        {
-            return _configuration.GetSection("AppSettings")?[key];
-        }
+    public string GetAppSetting(string key)
+    {
+        return _configuration.GetSection("AppSettings")?[key];
     }
 }

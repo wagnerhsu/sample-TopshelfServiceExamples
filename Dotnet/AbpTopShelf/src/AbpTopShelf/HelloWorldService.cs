@@ -1,20 +1,19 @@
 ﻿using Microsoft.Extensions.Logging;
 using Volo.Abp.DependencyInjection;
 
-namespace AbpTopShelf
+namespace AbpTopShelf;
+
+public class HelloWorldService : ITransientDependency
 {
-    public class HelloWorldService : ITransientDependency
+    private readonly ILogger<HelloWorldService> _logger;
+
+    public HelloWorldService(ILogger<HelloWorldService> logger)
     {
-        private readonly ILogger<HelloWorldService> _logger;
+        _logger = logger;
+    }
 
-        public HelloWorldService(ILogger<HelloWorldService> logger)
-        {
-            _logger = logger;
-        }
-
-        public void SayHello()
-        {
-            _logger.LogInformation("Hello World!");
-        }
+    public void SayHello()
+    {
+        _logger.LogInformation("Hello World!");
     }
 }

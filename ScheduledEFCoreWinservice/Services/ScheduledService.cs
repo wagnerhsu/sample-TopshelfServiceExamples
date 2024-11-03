@@ -6,45 +6,42 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ScheduledEFCoreWinservice.Services
+namespace ScheduledEFCoreWinservice.Services;
+
+public class ScheduledService
 {
+    private readonly QuartzController _quartzController;
 
-
-    public class ScheduledService
+    public ScheduledService(QuartzController quartzController)
     {
-        private readonly QuartzController _quartzController;
+        _quartzController = quartzController;
+    }
 
-        public ScheduledService(QuartzController quartzController)
+    public async Task<bool> Start()
+    {
+        JobDataMap jdm = new JobDataMap();
+        jdm.Add("name", "einmal ausführen");
+        string jobKey = await _quartzController.ScheduleJobStartOnce<MyJob>(DateTime.Now.AddSeconds(5), jdm);
+
+        jdm = new JobDataMap();
+        jdm.Add("name", "einmal ausführen");
+        jobKey = await _quartzController.ScheduleJobStartOnce<MyJob>(DateTime.Now.AddMinutes(2), jdm);
+        await _quartzController.RemoveJob(jobKey);
+
+        jdm = new JobDataMap
         {
-            _quartzController = quartzController;
-        }
+            { "name", "Alle 5sek" }
+        };
+        jobKey = await _quartzController.ScheduleJobWithIntervall<MyJob>(null, new TimeSpan(0, 0, 5), jdm);
 
-        public async Task<bool> Start()
-        {
-            JobDataMap jdm = new JobDataMap();
-            jdm.Add("name", "einmal ausführen");
-            string jobKey = await _quartzController.ScheduleJobStartOnce<MyJob>(DateTime.Now.AddSeconds(5), jdm);
+        await _quartzController.Start();
 
-            jdm = new JobDataMap();
-            jdm.Add("name", "einmal ausführen");
-            jobKey = await _quartzController.ScheduleJobStartOnce<MyJob>(DateTime.Now.AddMinutes(2), jdm);
-            await _quartzController.RemoveJob(jobKey);
+        return true;
+    }
 
-            jdm = new JobDataMap
-            {
-                { "name", "Alle 5sek" }
-            };
-            jobKey = await _quartzController.ScheduleJobWithIntervall<MyJob>(null, new TimeSpan(0, 0, 5), jdm);
-
-            await _quartzController.Start();
-
-            return true;
-        }
-
-        public async Task<bool> Stop()
-        {
-            await _quartzController.Shutdown();
-            return true;
-        }
+    public async Task<bool> Stop()
+    {
+        await _quartzController.Shutdown();
+        return true;
     }
 }

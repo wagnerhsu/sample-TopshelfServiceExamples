@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 
-namespace ScheduledEFCoreWinservice.DB
-{
+namespace ScheduledEFCoreWinservice.DB;
+
 public partial class ip2locationContext : DbContext
 {
     protected readonly IConfiguration _configuration;
@@ -106,5 +106,4 @@ public partial class ip2locationContext : DbContext
         Console.WriteLine("CONTEXT DISPOSED");
         return base.DisposeAsync();
     }
-}
 }
