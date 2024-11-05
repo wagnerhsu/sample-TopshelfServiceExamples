@@ -6,7 +6,8 @@
       "Serilog.Sinks.File",
       "Serilog.Enrichers.Thread",
       "Serilog.Enrichers.Process",
-      "Serilog.Sinks.Seq" // 添加 Seq sink
+      "Serilog.Sinks.Seq", // 添加 Seq sink
+      "Serilog.Enrichers.Environment"
     ],
     // 日志的最低级别
     // "Verbose", "Debug", "Information", "Warning", "Error", "Fatal"
@@ -37,8 +38,12 @@
         // Seq sink 配置
         "Name": "Seq",
         "Args": {
+          // Seq 服务器的 URL
           "serverUrl": "http://localhost:5341"
+          // 可选：API 密钥
+          // "apiKey": "your-api-key",
         },
+        // 设置 Seq 的最低日志级别为 Information
         "RestrictedToMinimumLevel": "Information"
       }
     ],
