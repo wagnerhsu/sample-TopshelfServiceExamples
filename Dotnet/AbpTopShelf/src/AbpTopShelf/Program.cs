@@ -38,7 +38,7 @@ public class Program
                 x.Service<IHost>(s =>
                 {
                     s.ConstructUsing(() =>
-                        CreateHostBuilder(args).UseConsoleLifetime().Build()
+                        CreateHostBuilder(args).Build()
                     );
 
                     s.WhenStarted(service => service.StartAsync(default));
